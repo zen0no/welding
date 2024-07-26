@@ -78,14 +78,20 @@ def find_deviation_peaks(line, cnt, threshold):
     a = a / np.linalg.norm(a)
     projections = np.stack([np.dot(cnt - p1, a)] * 2, axis=-1) * np.stack([a] * cnt.shape[0])
     d = np.linalg.norm(cnt - p1 - projections, axis=-1)
-    dets  = np.linalg.det(np.stack([np.stack([a] * cnt.shape[0], axis=0), cnt - p1 - projections], axis=-1))
+    dets  = -np.linalg.det(np.stack([np.stack([a] * cnt.shape[0], axis=0), cnt - p1 - projections], axis=-1))
     dets = np.sign(dets)
-    print(dets)
     # window_size = max(d.shape[0] // 5, 1)
     # d = savgol_filter(d, window_size, window_size - 1)
     d = np.multiply(dets, d)
     idx = [np.argmax(d), np.argmin(d)]
-    dist = (dets * d)[idx]
+    dist = d[idx]
     cnts = cnt[idx]
     projs = (projections[idx] + p1).astype(np.uint32)
     return dist, idx, cnts, projs
+
+
+def calculate_projection_line_width(line1, line2):
+    p1 = calculate_projection(line1, line2[0])
+    p2 = calculate_projection(line1, line2[1])
+
+    return np.linalg.norm(p1 - p2)

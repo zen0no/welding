@@ -6,7 +6,7 @@ from SORT import Sort
 for exp in [14]:
     
     tracker = Sort(max_age=3, min_hits=1, iou_threshold=0)
-    arr = np.load(fr'D:\Projects\Transformers\svarka\data\{exp}_export.npy')
+    arr = np.load(r'D:\welding\data\thermograms\9_export.npy')
     # for i in arr:
     summ_count = []
     total_fraim_points = []

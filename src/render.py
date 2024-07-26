@@ -29,3 +29,11 @@ def render_line(im, line, length_per_pex=1, unit='px', color=(0,0,255)):
     center = center.astype(np.int32)
     im = cv2.putText(im, s, center, cv2.FONT_HERSHEY_SIMPLEX, 2, color, 2)
     return im
+
+
+def draw_line(im , p1, p2, color, thikness):
+    im = cv2.line(im, p1, p2, color, thikness)
+    im = cv2.circle(im, p1, thikness * 2, color, thikness)
+    im = cv2.circle(im, p2, thikness * 2, color, thikness)
+    return im
+

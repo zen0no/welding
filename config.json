@@ -1,6 +1,6 @@
 {
-    "image_path": "data\\images\\14c.jpg",
-    "output_path": "output",
+    "image_path": "examples\\images",
+    "output_path": "examples\\output",
     "middle_part_path": "weights\\middle.pt",
     "plate_model_path": "weights\\plate.pt",
     "render": true
