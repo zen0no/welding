@@ -113,7 +113,7 @@ def main(config):
             res_d = []
             for c, l in zip((c1, c2), ((p11, p21), (p12, p22))):
                 dist, _, p1, p2 = find_deviation_peaks(l, c, 0.0005 * t)
-                res_d.append(dist)
+                res_d.append(np.abs(dist))
                 if p1 is not None:
                     for pr in zip(p1, p2):
                         plot = render_line(plot, pr, le, u)
