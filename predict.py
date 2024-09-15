@@ -43,7 +43,7 @@ def main(config):
     model1 = YOLO(middle_part_path)
     model2 = YOLO(plate_model_path)
 
-
+    # prepare paths
     image_path = pathlib.Path(config['image_path']).resolve()
     output_path = pathlib.Path(config['output_path']).resolve()
     output_masked = output_path / "masked"
@@ -61,8 +61,11 @@ def main(config):
 
     if not output_path.exists():
         output_path.mkdir()
+
     render = config['render']
     imgs = dict()
+
+    # read images
     if image_path.is_dir():
         for img_id in image_path.glob('**/*'):
             if img_id.is_file():
@@ -85,21 +88,34 @@ def main(config):
 
             plot = im.copy()
 
+            # read pixel per unit and unit type (mm or )
             le, u = get_pixel_real_size(ocr, im)
+
+            # create mask of middle part of the plate
             mask1 = get_mask(model1, im)
             cv2.imwrite('mask.jpg', mask1)
+
+            # create mask of side parts of the plate
             mask2 = get_mask(model2, im)
             mask2 = cv2.subtract(mask2,mask1)
+
+            # clear image from noise
             kernel = np.ones((5, 5))
             mask2 = cv2.erode(mask2, kernel, iterations=4)
             mask2 = cv2.dilate(mask2, kernel, iterations=4)
 
+
+            # find contours
             main_object_con = n_max_contours(mask1)
             plate_part_cntrs = n_max_contours(mask2, n=2)
+            
 
+            # find bounding rectangles
             quad = [approximte_contour(q) for q in plate_part_cntrs]
             rect = [bounding_rectangle(q) for q in quad]
 
+
+            #approximate side lines
             main_sides_rect = plate_width_line(*rect)
             t = np.linalg.norm(main_sides_rect[0][0] - main_sides_rect[0][1])
 
@@ -111,7 +127,12 @@ def main(config):
             plot = draw_line(plot, p11, p21, (255, 255, 0), 5)
             plot = draw_line(plot, p12, p22, (255, 255, 0), 5)
             res_d = []
+
+            # calculate distances between sides of second masks
             for c, l in zip((c1, c2), ((p11, p21), (p12, p22))):
+
+                # approximate upper and lower sides of middle part with straight lines
+                # and then calculate maximum and minimum deviations between contours and projection on the line
                 dist, _, p1, p2 = find_deviation_peaks(l, c, 0.0005 * t)
                 res_d.append(np.abs(dist))
                 if p1 is not None:
