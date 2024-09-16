@@ -15,3 +15,8 @@ For generation, install any UI with Lora support.
 Simple workflow provided for ComfyUI. Just drag&drop it into the webUI workspace.
 
 Models weights here: https://huggingface.co/Mangaboba/LaserSeamMacrograph
+
+
+## Usage
+
+To predict ghosts on image or single images, add to  config.json location to your images and run `python predict.py`.
